@@ -111,32 +111,31 @@ export  default  class ScrollTabView extends Component {
         });
     }
     codePushDownloadDidProgress(progress) {
-        hotUpdateEvent.hotUpdateMethod(a.toString(progress));
     }
     codePushStatusDidChange(syncStatus) {
         switch(syncStatus) {
-            case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
+            case codePush.SyncStatus.CHECKING_FOR_UPDATE:
                 console.log("Checking for update.");
                 break;
-            case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+            case codePush.SyncStatus.DOWNLOADING_PACKAGE:
                 console.log("Downloading package.");
                 break;
-            case CodePush.SyncStatus.AWAITING_USER_ACTION:
+            case codePush.SyncStatus.AWAITING_USER_ACTION:
                 console.log('wait for user');
                 break;
-            case CodePush.SyncStatus.INSTALLING_UPDATE:
+            case codePush.SyncStatus.INSTALLING_UPDATE:
                 console.log('Installing update.');
                 break;
-            case CodePush.SyncStatus.UP_TO_DATE:
+            case codePush.SyncStatus.UP_TO_DATE:
                 console.log("App up to date.");
                 break;
-            case CodePush.SyncStatus.UPDATE_IGNORED:
+            case codePush.SyncStatus.UPDATE_IGNORED:
                 console.log("Update cancelled by user.");
                 break;
-            case CodePush.SyncStatus.UPDATE_INSTALLED:
+            case codePush.SyncStatus.UPDATE_INSTALLED:
                 console.log('installed');
                 break;
-            case CodePush.SyncStatus.UNKNOWN_ERROR:
+            case codePush.SyncStatus.UNKNOWN_ERROR:
                 console.log('unknow error');
                 break;
         }

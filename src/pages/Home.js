@@ -86,7 +86,7 @@ export default class Home extends Component {
                 console.log('XXX',responseJson);
                 if (responseJson.status === '1') {
                     this.updateNumMessage = responseJson.updateNum;
-                   // this.setState({data: this.dealWithLongArray(responseJson.result), refreshing: false});
+                    this.setState({data: this.dealWithLongArray(responseJson.result), refreshing: false});
                    // this.setState({loadNewData: true});
                     setTimeout(() => {
                         this.setState({loadNewData: true})
@@ -159,6 +159,11 @@ export default class Home extends Component {
     }
     PostThumb = (item,dotop,index) => {
       //  {classid:2,id:2,dotop:1,doajax:1,ajaxarea:'diggnum'dotop这个字段 传0 是踩 传1是赞}
+      //   let {data} = this.state;
+      //   console.log('XXXX',data);
+      //
+      //   data[index].diggtop =  data[index].diggtop + 1;
+      //   this.setState({data:data});
         let url = '';
         if (dotop === 0){
             url = urlConfig.baseURL + urlConfig.thumbDownUrl;
@@ -201,6 +206,7 @@ export default class Home extends Component {
                     {/*style: {color: '#D3D3D3'}*/}
                 {/*});*/}
                // this.props.navigation.navigate('Detail', {data: this.state.data[index]});
+
             }}>
                 <View>
                     <View style={{backgroundColor: 'white',marginHorizontal:15,marginTop:15}}>
