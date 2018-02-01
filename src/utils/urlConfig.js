@@ -12,7 +12,7 @@ export default urlConfig = {
     //栏目列表数据后面拼接&classid=3
     sectionListData:'/e/extend/api/new.php?getJson=column',
     //发布地址
-    pubLishUrl:'http://m.h8.vc/up/',
+    pubLishUrl:'http://m.h8.vc/fromapp',
     //点赞或者踩 {classid:2,id:2,dotop:1,doajax:1,ajaxarea:'diggnum'dotop这个字段 传0 是踩 传1是赞}
     thumbUpUrl:'/e/public/digg/post/index.php',
 

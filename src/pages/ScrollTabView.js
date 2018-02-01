@@ -41,6 +41,8 @@ import { ifIphoneX } from '../utils/iphoneX';
 import _fetch from  '../utils/_fetch'
 import Home from './Home';
 import storageKeys from '../utils/storageKeyValue'
+import codePush from 'react-native-code-push'
+import SplashScreen from 'react-native-splash-screen'
 
 export  default  class ScrollTabView extends Component {
     static navigationOptions = {
@@ -85,6 +87,21 @@ export  default  class ScrollTabView extends Component {
     }
 
     componentDidMount() {
+        SplashScreen.hide();
+        codePush.sync(
+            { installMode: codePush.InstallMode.ON_NEXT_RESTART, updateDialog:  {
+                appendReleaseDescription:true,
+                descriptionPrefix:'更新内容:',
+                mandatoryContinueButtonLabel:'更新',
+                mandatoryUpdateMessage:'有新版本了，请您及时更新',
+                optionalInstallButtonLabel: '立即更新',
+                optionalIgnoreButtonLabel: '稍后',
+                optionalUpdateMessage:'有新版本了，是否更新?',
+                title: '提示'
+            } },
+            this.codePushStatusDidChange.bind(this),
+            this.codePushDownloadDidProgress.bind(this)
+        );
         this.props.navigation.setParams({
             rightFuc:()=>{this.props.navigation.navigate('Web')},
             leftFuc:()=>{ DeviceEventEmitter.emit('reloadData')}
@@ -92,6 +109,37 @@ export  default  class ScrollTabView extends Component {
         InteractionManager.runAfterInteractions(() => {
             this.loadData();
         });
+    }
+    codePushDownloadDidProgress(progress) {
+        hotUpdateEvent.hotUpdateMethod(a.toString(progress));
+    }
+    codePushStatusDidChange(syncStatus) {
+        switch(syncStatus) {
+            case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
+                console.log("Checking for update.");
+                break;
+            case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+                console.log("Downloading package.");
+                break;
+            case CodePush.SyncStatus.AWAITING_USER_ACTION:
+                console.log('wait for user');
+                break;
+            case CodePush.SyncStatus.INSTALLING_UPDATE:
+                console.log('Installing update.');
+                break;
+            case CodePush.SyncStatus.UP_TO_DATE:
+                console.log("App up to date.");
+                break;
+            case CodePush.SyncStatus.UPDATE_IGNORED:
+                console.log("Update cancelled by user.");
+                break;
+            case CodePush.SyncStatus.UPDATE_INSTALLED:
+                console.log('installed');
+                break;
+            case CodePush.SyncStatus.UNKNOWN_ERROR:
+                console.log('unknow error');
+                break;
+        }
     }
     loadData = () => {
         let url = urlConfig.baseURL + urlConfig.sectionList;

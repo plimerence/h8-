@@ -137,12 +137,11 @@ export default class Home extends Component {
         return waitDealArray;
     }
     refreshing = () => {
-        console.log(123)
         if (this.props.index === global.activeTab){
             this.flatList.scrollToOffset({ offset: 0, animated: true });
             this.flatList.BeginRefresh();
             //this.loadData()
-            setTimeout(this.flatList.StopRefresh,1000);
+           // setTimeout(this.flatList.StopRefresh,1000);
          //   this.flatList.StopRefresh();
             //this.flatList.scrollToIndex({animated: true,index :2});
            // this.setState({refreshing: true});

@@ -19,7 +19,7 @@ import {
 // const padding = 2; //scrollview与外面容器的距离
 const pullOkMargin = 100; //下拉到ok状态时topindicator距离顶部的距离
 const defaultDuration = 300;
-const defaultTopIndicatorHeight = 80; //顶部刷新指示器的高度
+const defaultTopIndicatorHeight = 40; //顶部刷新指示器的高度
 const defaultFlag = {pulling: false, pullok: false, pullrelease: false};
 const flagPulling = {pulling: true, pullok: false, pullrelease: false};
 const flagPullok = {pulling: false, pullok: true, pullrelease: false};
@@ -160,6 +160,7 @@ export default class extends Component {
     BeginRefresh(){
         this.state.pullPan.setValue({x: this.defaultXY.x, y: this.topIndicatorHeight});
         this.setFlag(flagPullrelease);
+        this.props.onPullRelease&&this.props.onPullRelease(this.resolveHandler);
     }
 
     StopRefresh(){
