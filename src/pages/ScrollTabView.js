@@ -43,6 +43,7 @@ import Home from './Home';
 import storageKeys from '../utils/storageKeyValue'
 import codePush from 'react-native-code-push'
 import SplashScreen from 'react-native-splash-screen'
+import RNFetchBlob from 'react-native-fetch-blob'
 
 export  default  class ScrollTabView extends Component {
     static navigationOptions = {
@@ -89,7 +90,7 @@ export  default  class ScrollTabView extends Component {
     componentDidMount() {
         SplashScreen.hide();
         codePush.sync(
-            { installMode: codePush.InstallMode.ON_NEXT_RESTART, updateDialog:  {
+            { installMode: codePush.InstallMode.IMMEDIATE, updateDialog:  {
                 appendReleaseDescription:true,
                 descriptionPrefix:'更新内容:',
                 mandatoryContinueButtonLabel:'更新',
@@ -142,8 +143,7 @@ export  default  class ScrollTabView extends Component {
     }
     loadData = () => {
         let url = urlConfig.baseURL + urlConfig.sectionList;
-        _fetch(fetch(url),30000)
-       // fetch(url)
+        fetch(url)
             .then((response) =>  response.json())
            .then((responseJson) => {
             if ((responseJson.result instanceof  Array) && responseJson.result.length > 0){
@@ -185,7 +185,7 @@ export  default  class ScrollTabView extends Component {
     }
     renderTabBar = (params) => {
         global.activeTab = params.activeTab;
-        return <ScrollableTabBar activeTextColor='red' underlineStyle={{width:0,height:0}} backgroundColor='white' textStyle={{fontSize:18}} tabStyle={{width:60,paddingLeft:0,paddingRight:0}}/>;
+        return <ScrollableTabBar activeTextColor='red' underlineStyle={{width:0,height:0}} backgroundColor='white' textStyle={{fontSize:18}} tabStyle={{paddingLeft:10,paddingRight:10}}/>;
     }
     pageNumber = (number) => {
         let page = 0;

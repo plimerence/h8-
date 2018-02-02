@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
         left: 0,
         flexDirection: 'row',
         width: Dimensions.get('window').width,
-        height: 80,
+        height: defaultTopIndicatorHeight,
         justifyContent: 'center',
         alignItems: 'center',
     },

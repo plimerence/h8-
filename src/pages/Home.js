@@ -86,14 +86,14 @@ export default class Home extends Component {
                 console.log('XXX',responseJson);
                 if (responseJson.status === '1') {
                     this.updateNumMessage = responseJson.updateNum;
-                    this.setState({data: this.dealWithLongArray(responseJson.result), refreshing: false});
-                   // this.setState({loadNewData: true});
                     setTimeout(() => {
                         this.setState({loadNewData: true})
                     }, 500)
-                   // this.flatList && this.flatList.setData([], 0);
+                    console.log('xxxxxx',responseJson.result);
                     this.flatList && this.flatList.setData(this.dealWithLongArray(responseJson.result), 0);
-                        resolve &&  resolve();
+                    this.FlatListData = this.dealWithLongArray(responseJson.result);
+                    console.log('xxxxxx1',this.FlatListData);
+                    resolve &&  resolve();
                     WRITE_CACHE(storageKeys.homeList + 'page' + this.props.index,responseJson.result);
                     setTimeout(() => {
                         this.setState({loadNewData: false})
@@ -128,10 +128,20 @@ export default class Home extends Component {
     }
     dealWithLongArray = (dataArray) => {
        // let waitDealArray = this.state.data.concat(dataArray);
-        let waitDealArray = dataArray.concat(this.state.data);
+        let waitDealArray = dataArray.concat(this.FlatListData).filter((value)=>{return !(!value || value === "");});
         if (waitDealArray.length >= 50) {
-         //   waitDealArray = waitDealArray.slice(waitDealArray.length - 50, waitDealArray.length);
             waitDealArray = waitDealArray.slice(0, 50);
+            console.log('处理过的array', waitDealArray);
+        }
+        return waitDealArray;
+    }
+    dealWithLoadMoreData = (dataArray) => {
+        // let waitDealArray = this.state.data.concat(dataArray);
+        console.log('loadMoreData',dataArray);
+        let waitDealArray =this.FlatListData.concat(dataArray).filter((value)=>{return !(!value || value === "");});
+        console.log('loadMoreDatacontact',waitDealArray);
+        if (waitDealArray.length >= 50) {
+            waitDealArray = waitDealArray.slice(waitDealArray.length -50, waitDealArray.length);
             console.log('处理过的array', waitDealArray);
         }
         return waitDealArray;
@@ -293,7 +303,8 @@ export default class Home extends Component {
             .then((responseJson) => {
                 console.log('XXX',responseJson);
                 if (responseJson.status === '1') {
-                    this.flatList && this.flatList.addData(this.dealWithLongArray(responseJson.result));
+                    this.flatList && this.flatList.addData(this.dealWithLoadMoreData(responseJson.result));
+                    this.FlatListData = this.dealWithLoadMoreData(responseJson.result);
                 }else{
                     Toast.show(responseJson.message, {
                         duration: Toast.durations.SHORT,

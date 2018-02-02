@@ -3,6 +3,7 @@ package com.toutiao;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.RNFetchBlob.RNFetchBlobPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.ReactNativeHost;
@@ -31,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFetchBlobPackage(),
             new SplashScreenReactPackage(),
             new CodePush("PDDh4BSXFe8z9fWl1W_1JPpCE_Na453fa37b-72fd-4537-8a8f-74c62555459c", getApplicationContext(), BuildConfig.DEBUG),
               new RNPackage()
