@@ -77,7 +77,7 @@ export default class Home extends Component {
                 url = urlConfig.baseURL + urlConfig.randomList;
                 break;
             default:
-                url = urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid;
+                url = urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid ;
         }
         _fetch(fetch(url),30000)
        // fetch(url)

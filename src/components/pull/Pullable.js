@@ -158,7 +158,7 @@ export default class extends Component {
         }
     }
     BeginRefresh(){
-        this.state.pullPan.setValue({x: this.defaultXY.x, y: this.topIndicatorHeight});
+        this.state.pullPan.setValue({x: this.defaultXY.x, y:0});
         this.setFlag(flagPullrelease);
         this.props.onPullRelease&&this.props.onPullRelease(this.resolveHandler);
     }
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
         header: {
         height: defaultTopIndicatorHeight,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
         status: {
         flexDirection: 'row',

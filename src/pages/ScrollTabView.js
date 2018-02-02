@@ -31,7 +31,8 @@ import {
     LayoutAnimation,
     NativeModules,
     ImageBackground,
-    FlatList
+    FlatList,
+    AppState
 } from 'react-native';
 import ScrollableTabView,{ ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Button from '../components/Button';
@@ -87,22 +88,32 @@ export  default  class ScrollTabView extends Component {
         WRITE_CACHE("USERPWD",{loginStatus:true},null);
     }
 
-    componentDidMount() {
-        SplashScreen.hide();
+    CodePushSync = () => {
         codePush.sync(
-            { installMode: codePush.InstallMode.IMMEDIATE, updateDialog:  {
-                appendReleaseDescription:true,
-                descriptionPrefix:'更新内容:',
-                mandatoryContinueButtonLabel:'更新',
-                mandatoryUpdateMessage:'有新版本了，请您及时更新',
-                optionalInstallButtonLabel: '立即更新',
-                optionalIgnoreButtonLabel: '稍后',
-                optionalUpdateMessage:'有新版本了，是否更新?',
-                title: '提示'
-            } },
+            { installMode: codePush.InstallMode.IMMEDIATE,
+                updateDialog:  {
+                    appendReleaseDescription:true,
+                    descriptionPrefix:'更新内容:',
+                    mandatoryContinueButtonLabel:'更新',
+                    mandatoryUpdateMessage:'有新版本了，请您及时更新',
+                    optionalInstallButtonLabel: '立即更新',
+                    optionalIgnoreButtonLabel: '稍后',
+                    optionalUpdateMessage:'有新版本了，是否更新?',
+                    title: '提示'
+                },
+                checkFrequency: codePush.CheckFrequency.ON_APP_RESUME },
             this.codePushStatusDidChange.bind(this),
             this.codePushDownloadDidProgress.bind(this)
         );
+    }
+    componentWillMount() {
+        //监听状态改变事件
+        AppState.addEventListener('change', this.handleAppStateChange);
+    }
+
+    componentDidMount() {
+        SplashScreen.hide();
+        this.CodePushSync();
         this.props.navigation.setParams({
             rightFuc:()=>{this.props.navigation.navigate('Web')},
             leftFuc:()=>{ DeviceEventEmitter.emit('reloadData')}
@@ -110,6 +121,18 @@ export  default  class ScrollTabView extends Component {
         InteractionManager.runAfterInteractions(() => {
             this.loadData();
         });
+    }
+
+    componentWillUnmount() {
+        //删除状态改变事件监听
+        AppState.removeEventListener('change');
+    }
+    handleAppStateChange = (appState) => {
+       console.log('当前状态为:'+appState);
+       if (appState === 'active'){
+           this.CodePushSync && this.CodePushSync();
+
+       }
     }
     codePushDownloadDidProgress(progress) {
     }
