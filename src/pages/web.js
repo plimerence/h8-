@@ -88,8 +88,8 @@ const header = {
         paddingTop: 44,
         height:88
     }, {
-        paddingTop: 20,
-        height:64
+        paddingTop: Platform.OS === "ios" ? 20 : 0,
+        height:Platform.OS === 'ios' ? 64 : 44,
     }),
     flexDirection:'row',
     justifyContent:'space-between',

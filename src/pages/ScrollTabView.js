@@ -34,35 +34,36 @@ import {
     FlatList,
     AppState
 } from 'react-native';
-import ScrollableTabView,{ ScrollableTabBar} from 'react-native-scrollable-tab-view';
+import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view';
 import Button from '../components/Button';
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
-import { ifIphoneX } from '../utils/iphoneX';
+import {ifIphoneX} from '../utils/iphoneX';
 import _fetch from  '../utils/_fetch'
 import Home from './Home';
 import storageKeys from '../utils/storageKeyValue'
 import codePush from 'react-native-code-push'
 import SplashScreen from 'react-native-splash-screen'
 import RNFetchBlob from 'react-native-fetch-blob'
-
+import Toast from 'react-native-root-toast';
+import baseConfig from '../utils/baseConfig'
 export  default  class ScrollTabView extends Component {
     static navigationOptions = {
-        header:({navigation}) =>{
+        header: ({navigation}) => {
             return (<View style={{...header}}>
                 <TouchableOpacity activeOpacity={1} onPress={() => {
                     navigation.state.routes[0].params.leftFuc && navigation.state.routes[0].params.leftFuc();
                 }}>
-                    <View style={{justifyContent:'center',marginLeft:10,alignItems:'center',height:43.7}}>
-                        <Image source={require('../assets/reload.png')} style={{width:25,height:25}}/>
+                    <View style={{justifyContent: 'center', marginLeft: 10, alignItems: 'center', height: 43.7}}>
+                        <Image source={require('../assets/reload.png')} style={{width: 25, height: 25}}/>
                     </View>
                 </TouchableOpacity>
-                <Text style={{fontSize:17,textAlign:'center',fontWeight:'bold',lineHeight:43.7,color:'white'}}>哈吧</Text>
+                <Text style={{fontSize: 17, textAlign: 'center', fontWeight: 'bold', lineHeight: 43.7, color: 'white'}}>哈吧</Text>
                 <TouchableOpacity activeOpacity={1} onPress={() => {
                     navigation.state.routes[0].params.rightFuc && navigation.state.routes[0].params.rightFuc();
                 }}>
-                    <View style={{justifyContent:'center',marginRight:10,alignItems:'center',height:43.7}}>
-                        <Image source={require('../assets/edit.png')} style={{width:30,height:30}}/>
+                    <View style={{justifyContent: 'center', marginRight: 10, alignItems: 'center', height: 43.7}}>
+                        <Image source={require('../assets/edit.png')} style={{width: 30, height: 30}}/>
                     </View>
                 </TouchableOpacity>
             </View>)
@@ -72,40 +73,43 @@ export  default  class ScrollTabView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sectionList:[],
-            page:0,
+            sectionList: [],
+            page: 0,
         };
     }
+
     readCache = () => {
-        READ_CACHE("GesPWD",(res)=>{
+        READ_CACHE("GesPWD", (res) => {
             if (res && res.length > 0) {
-            }else{
+            } else {
             }
 
-        },(err)=>{
+        }, (err) => {
         });
 
-        WRITE_CACHE("USERPWD",{loginStatus:true},null);
+        WRITE_CACHE("USERPWD", {loginStatus: true}, null);
     }
 
     CodePushSync = () => {
         codePush.sync(
-            { installMode: codePush.InstallMode.IMMEDIATE,
-                updateDialog:  {
-                    appendReleaseDescription:true,
-                    descriptionPrefix:'更新内容:',
-                    mandatoryContinueButtonLabel:'更新',
-                    mandatoryUpdateMessage:'有新版本了，请您及时更新',
+            {
+                installMode: codePush.InstallMode.IMMEDIATE,
+                updateDialog: {
+                    appendReleaseDescription: true,
+                    descriptionPrefix: '更新内容:',
+                    mandatoryContinueButtonLabel: '更新',
+                    mandatoryUpdateMessage: '有新版本了，请您及时更新',
                     optionalInstallButtonLabel: '立即更新',
                     optionalIgnoreButtonLabel: '稍后',
-                    optionalUpdateMessage:'有新版本了，是否更新?',
+                    optionalUpdateMessage: '有新版本了，是否更新?',
                     title: '提示'
                 },
-                checkFrequency: codePush.CheckFrequency.ON_APP_RESUME },
+            },
             this.codePushStatusDidChange.bind(this),
             this.codePushDownloadDidProgress.bind(this)
         );
     }
+
     componentWillMount() {
         //监听状态改变事件
         AppState.addEventListener('change', this.handleAppStateChange);
@@ -115,8 +119,12 @@ export  default  class ScrollTabView extends Component {
         SplashScreen.hide();
         this.CodePushSync();
         this.props.navigation.setParams({
-            rightFuc:()=>{this.props.navigation.navigate('Web')},
-            leftFuc:()=>{ DeviceEventEmitter.emit('reloadData')}
+            rightFuc: () => {
+                this.props.navigation.navigate('Web')
+            },
+            leftFuc: () => {
+                DeviceEventEmitter.emit('reloadData')
+            }
         });
         InteractionManager.runAfterInteractions(() => {
             this.loadData();
@@ -127,17 +135,20 @@ export  default  class ScrollTabView extends Component {
         //删除状态改变事件监听
         AppState.removeEventListener('change');
     }
-    handleAppStateChange = (appState) => {
-       console.log('当前状态为:'+appState);
-       if (appState === 'active'){
-           this.CodePushSync && this.CodePushSync();
 
-       }
+    handleAppStateChange = (appState) => {
+        console.log('当前状态为:' + appState);
+        if (appState === 'active') {
+            this.CodePushSync && this.CodePushSync();
+
+        }
     }
+
     codePushDownloadDidProgress(progress) {
     }
+
     codePushStatusDidChange(syncStatus) {
-        switch(syncStatus) {
+        switch (syncStatus) {
             case codePush.SyncStatus.CHECKING_FOR_UPDATE:
                 console.log("Checking for update.");
                 break;
@@ -164,12 +175,46 @@ export  default  class ScrollTabView extends Component {
                 break;
         }
     }
+    // loadData = () => {
+    //     let url = urlConfig.baseURL + urlConfig.sectionList;
+    //     fetch(url)
+    //         .then((response) =>  response.json())
+    //        .then((responseJson) => {
+    //         if ((responseJson.result instanceof  Array) && responseJson.result.length > 0){
+    //             responseJson.result.unshift({
+    //                 "classname": "最新",
+    //                 "classid": "0",
+    //                 "tbname": "article"
+    //             }, {
+    //                 "classname": "随机",
+    //                 "classid": "1",
+    //                 "tbname": "article"
+    //             })
+    //             WRITE_CACHE(storageKeys.sectionList,responseJson.result);
+    //             this.setState({sectionList: responseJson.result});
+    //         }else{
+    //             READ_CACHE(storageKeys.sectionList,(res)=>{
+    //                 if (res && res.length > 0) {
+    //                     this.setState({sectionList: res});
+    //                 }else{}
+    //             },(err)=>{
+    //             });}
+    //        }).catch((error) => {
+    //         READ_CACHE(storageKeys.sectionList,(res)=>{
+    //             if (res && res.length > 0) {
+    //                 this.setState({sectionList: res});
+    //             }else{}
+    //         },(err)=>{
+    //         });
+    //             console.error('XXXXX',error);
+    //         });
+    // }
     loadData = () => {
         let url = urlConfig.baseURL + urlConfig.sectionList;
-        fetch(url)
-            .then((response) =>  response.json())
-           .then((responseJson) => {
-            if ((responseJson.result instanceof  Array) && responseJson.result.length > 0){
+        RNFetchBlob.config({fileCache: true, ...baseConfig.BaseTimeOut}).fetch('GET', url, {
+            ...baseConfig.BaseHeaders,
+        }).then((res) => res.json()).then((responseJson) => {
+            if ((responseJson.result instanceof Array) && responseJson.result.length > 0) {
                 responseJson.result.unshift({
                     "classname": "最新",
                     "classid": "0",
@@ -179,76 +224,85 @@ export  default  class ScrollTabView extends Component {
                     "classid": "1",
                     "tbname": "article"
                 })
-                WRITE_CACHE(storageKeys.sectionList,responseJson.result);
+                WRITE_CACHE(storageKeys.sectionList, responseJson.result);
                 this.setState({sectionList: responseJson.result});
-            }else{
-                READ_CACHE(storageKeys.sectionList,(res)=>{
-                    if (res && res.length > 0) {
-                        this.setState({sectionList: res});
-                    }else{}
-                },(err)=>{
-                });}
-           }).catch((error) => {
-            READ_CACHE(storageKeys.sectionList,(res)=>{
+            }
+        }).catch((err) => {
+            READ_CACHE(storageKeys.sectionList, (res) => {
                 if (res && res.length > 0) {
                     this.setState({sectionList: res});
-                }else{}
-            },(err)=>{
+                } else {
+                }
+            }, (err) => {
             });
-                console.error('XXXXX',error);
+            Toast.show(err.message, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                hideOnPress: false,
+                delay: 0
             });
+        })
     }
+        renderTab = (tabs) => {
+            let array = [];
+            array.push(tabs.map((item) => {
+                return <Text style={{width: 50, height: 20}}>{item}</Text>
+            }));
+            return array;
+        }
+        renderTabBar = (params) => {
+            global.activeTab = params.activeTab;
+            return <ScrollableTabBar activeTextColor='red' underlineStyle={{width: 0, height: 0}}
+                                     backgroundColor='white' textStyle={{fontSize: 18}}
+                                     tabStyle={{paddingLeft: 10, paddingRight: 10}}/>;
+        }
+        pageNumber = (number) => {
+            let page = 0;
+            this.state.sectionList.forEach((v, i) => {
+                if (parseInt(v.classid) === number) {
+                    page = i
+                }
+            })
+            this.setState({page: page});
+        }
 
-    renderTab = (tabs) => {
-        let array = [];
-        array.push(tabs.map((item) => {
-            return <Text style={{width: 50,height:20}} >{item}</Text>
-        }));
-        return array;
-    }
-    renderTabBar = (params) => {
-        global.activeTab = params.activeTab;
-        return <ScrollableTabBar activeTextColor='red' underlineStyle={{width:0,height:0}} backgroundColor='white' textStyle={{fontSize:18}} tabStyle={{paddingLeft:10,paddingRight:10}}/>;
-    }
-    pageNumber = (number) => {
-        let page = 0;
-        this.state.sectionList.forEach((v,i)=>{if (parseInt(v.classid) === number){page = i}})
-        this.setState({page:page});
-    }
+        renderContent = (sectionList) => {
+            let list = [];
+            list.push(sectionList.map((data, index) => {
+                return <Home tabLabel={data.classname} data={data} {...this.props} pageNumber={(number) => {
+                    this.pageNumber(number)
+                }} index={index}/>
+            }));
+            return list;
+        }
 
-    renderContent = (sectionList) => {
-        let list = [];
-        list.push(sectionList.map((data,index) => {
-            return <Home tabLabel={data.classname} data={data} {...this.props} pageNumber={(number)=> {this.pageNumber(number)}} index={index}/>
-        }));
-        return list;
+        render()
+        {
+            return (
+                <View style={{flex: 1}}>
+                    <StatusBar animated={true} backgroundColor='#C7272F' barStyle={'light-content'}/>
+                    <ScrollableTabView renderTabBar={this.renderTabBar} page={this.state.page} locked={Platform.OS === 'ios'?true:false}>
+                        {this.renderContent(this.state.sectionList)}
+                    </ScrollableTabView>
+                </View>
+            );
+        }
     }
-
-    render() {
-        return (
-            <View style={{flex:1}}>
-                <StatusBar
-                    barStyle="light-content"
-                />
-            <ScrollableTabView renderTabBar={this.renderTabBar} page={this.state.page} locked={true}>
-                {this.renderContent(this.state.sectionList)}
-            </ScrollableTabView>
-            </View>
-        );
+    const
+    header = {
+        backgroundColor: '#C7272F',
+        ...ifIphoneX({
+            paddingTop: 44,
+            height: 88
+        }, {
+            paddingTop: Platform.OS === "ios" ? 20 : 0,
+            height: Platform.OS === 'ios' ? 64 : 44,
+        }),
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     }
-}
-const header = {
-    backgroundColor: '#C7272F',
-    ...ifIphoneX({
-        paddingTop: 44,
-        height:88
-    }, {
-        paddingTop: 20,
-        height:64
-    }),
-    flexDirection:'row',
-    justifyContent:'space-between',
-}
 
 
 

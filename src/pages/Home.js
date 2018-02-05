@@ -86,9 +86,9 @@ export default class Home extends Component {
                 console.log('XXX',responseJson);
                 if (responseJson.status === '1') {
                     this.updateNumMessage = responseJson.updateNum;
-                    setTimeout(() => {
+                    if (this.updateNumMessage) {  setTimeout(() => {
                         this.setState({loadNewData: true})
-                    }, 500)
+                    }, 500)};
                     console.log('xxxxxx',responseJson.result);
                     this.flatList && this.flatList.setData(this.dealWithLongArray(responseJson.result), 0);
                     this.FlatListData = this.dealWithLongArray(responseJson.result);
@@ -123,7 +123,14 @@ export default class Home extends Component {
                     }else{}
                 },(err)=>{
                 });
-                console.error(error);
+                Toast.show(error.message, {
+                    duration: Toast.durations.SHORT,
+                    position: Toast.positions.CENTER,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
             });
     }
     dealWithLongArray = (dataArray) => {
@@ -224,7 +231,7 @@ export default class Home extends Component {
                             fontSize: 16,
                             lineHeight: 24,
                             color:'black',
-                        }} >{item.smalltext && item.smalltext.replace(/^\r+|\n+$/g,"")}</Text>
+                        }} selectable={true}>{item.smalltext && item.smalltext.replace(/^\r+|\n+$/g,"")}</Text>
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -298,7 +305,7 @@ export default class Home extends Component {
             default:
                 url = urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid;
         }
-        fetch(url)
+        _fetch(fetch(url),30000)
             .then((response) => response.json())
             .then((responseJson) => {
                 console.log('XXX',responseJson);
@@ -317,7 +324,14 @@ export default class Home extends Component {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                Toast.show(error.message, {
+                    duration: Toast.durations.SHORT,
+                    position: Toast.positions.CENTER,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                });
             });
 
     };
