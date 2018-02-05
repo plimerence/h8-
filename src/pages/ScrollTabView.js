@@ -283,7 +283,7 @@ export  default  class ScrollTabView extends Component {
             return (
                 <View style={{flex: 1}}>
                     <StatusBar animated={true} backgroundColor='#C7272F' barStyle={'light-content'}/>
-                    <ScrollableTabView renderTabBar={this.renderTabBar} page={this.state.page} locked={Platform.OS === 'ios'?true:false}>
+                    <ScrollableTabView renderTabBar={this.renderTabBar} page={this.state.page}>
                         {this.renderContent(this.state.sectionList)}
                     </ScrollableTabView>
                 </View>

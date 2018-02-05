@@ -26,6 +26,7 @@ import {
     NativeModules,
     ImageBackground,
     FlatList,
+    Clipboard
 } from 'react-native';
 import urlConfig  from  '../../src/utils/urlConfig';
 import formatData from '../../src/utils/formatData';
@@ -64,6 +65,17 @@ export default class Home extends Component {
     componentWillUnmount() {
         this.subscription.remove();
     }
+     setClipboardContent = (text) => {
+        Clipboard.setString(text);
+         Toast.show('保存成功', {
+             duration: Toast.durations.SHORT,
+             position: Toast.positions.CENTER,
+             shadow: true,
+             animation: true,
+             hideOnPress: true,
+             delay: 0,
+         });
+    }
     loadData = (resolve) => {
         let url = '';
         if (!this.props.data) {
@@ -74,19 +86,18 @@ export default class Home extends Component {
                 url = urlConfig.baseURL + urlConfig.newList;
                 break;
             case '1':
-                url = urlConfig.baseURL + urlConfig.randomList;
+                url =  this.isNotfirstFetch ? urlConfig.baseURL + urlConfig.randomList + '&num=' + '1' : urlConfig.baseURL + urlConfig.randomList;
                 break;
             default:
-                url = urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid ;
+                url = this.isNotfirstFetch ? urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid + '&num=' + '1':urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid;
         }
         _fetch(fetch(url),30000)
-       // fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
-                console.log('XXX',responseJson);
+                console.log('XXX',responseJson,url);
                 if (responseJson.status === '1') {
                     this.updateNumMessage = responseJson.updateNum;
-                    if (this.updateNumMessage) {  setTimeout(() => {
+                    if (this.updateNumMessage && this.isNotfirstFetch) {  setTimeout(() => {
                         this.setState({loadNewData: true})
                     }, 500)};
                     console.log('xxxxxx',responseJson.result);
@@ -98,8 +109,9 @@ export default class Home extends Component {
                     setTimeout(() => {
                         this.setState({loadNewData: false})
                     }, 1500)
+                    //要求除了最新外其他页面非第一次接口请求都要加上&num
+                    if (this.props.index !== 0){ this.isNotfirstFetch = true};
                 }else{
-                  //  this.setState({loadError:true});
                     READ_CACHE(storageKeys.homeList + 'page' + this.props.index,(res)=>{
                         if (res && res.length > 0) {
                             this.flatList && this.flatList.setData(res, 0);
@@ -231,7 +243,7 @@ export default class Home extends Component {
                             fontSize: 16,
                             lineHeight: 24,
                             color:'black',
-                        }} selectable={true}>{item.smalltext && item.smalltext.replace(/^\r+|\n+$/g,"")}</Text>
+                        }} onPress={()=>{this.setClipboardContent(item.smalltext && item.smalltext.replace(/^\r+|\n+$/g,""))}}>{item.smalltext && item.smalltext.replace(/^\r+|\n+$/g,"")}</Text>
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -300,15 +312,16 @@ export default class Home extends Component {
                 url = urlConfig.baseURL + urlConfig.newList;
                 break;
             case '1':
-                url = urlConfig.baseURL + urlConfig.randomList + '&page=' + 20;
+                url = urlConfig.baseURL + urlConfig.randomList;
                 break;
             default:
-                url = urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid;
+                url = this.isNotfirstFetch ? urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid + '&num=' + '1':urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid;
+
         }
         _fetch(fetch(url),30000)
             .then((response) => response.json())
             .then((responseJson) => {
-                console.log('XXX',responseJson);
+                console.log('XXX',responseJson,url);
                 if (responseJson.status === '1') {
                     this.flatList && this.flatList.addData(this.dealWithLoadMoreData(responseJson.result));
                     this.FlatListData = this.dealWithLoadMoreData(responseJson.result);
