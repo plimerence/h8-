@@ -104,6 +104,8 @@ export default class extends Component {
     }
 
     onPanResponderMove(e, gesture) {
+        if (this.downGesture){}else{DeviceEventEmitter.emit('downGesture',{downGesture:true}); this.downGesture = true;}
+        this.downGesture = true;
         this.gesturePosition = {x: this.defaultXY.x, y: gesture.dy};
         if (isUpGesture(gesture.dx, gesture.dy)) { //向上滑动
             if(this.isPullState()) {
@@ -120,7 +122,6 @@ export default class extends Component {
             }
             return;
         } else if (isDownGesture(gesture.dx, gesture.dy)) { //下拉
-            DeviceEventEmitter.emit('downGesture',{downGesture:true});
             this.state.pullPan.setValue({x: this.defaultXY.x, y: this.lastY + gesture.dy / 2});
             if (gesture.dy < this.topIndicatorHeight + this.pullOkMargin) { //正在下拉
                 if (!this.flag.pulling) {
@@ -137,6 +138,7 @@ export default class extends Component {
     }
 
     onPanResponderRelease(e, gesture) {
+        if (this.downGesture){DeviceEventEmitter.emit('downGesture',{downGesture:false});  this.downGesture = false;}
         if (this.flag.pulling) { //没有下拉到位
             this.resetDefaultXYHandler(); //重置状态
 
@@ -194,14 +196,12 @@ export default class extends Component {
     /** 数据加载完成后调用此方法进行重置归位
      */
     resolveHandler() {
-        DeviceEventEmitter.emit('downGesture',{downGesture:false});
         if (this.flag.pullrelease) { //仅触摸松开时才触发
             this.resetDefaultXYHandler();
         }
     }
 
     resetDefaultXYHandler() {
-        DeviceEventEmitter.emit('downGesture',{downGesture:false});
         this.flag = defaultFlag;
         Animated.timing(this.state.pullPan, {
             toValue: {x: 0, y: this.topIndicatorHeight * -1},

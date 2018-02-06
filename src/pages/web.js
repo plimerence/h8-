@@ -43,7 +43,8 @@ import urlConfig from '../utils/urlConfig'
 export  default  class web extends Component {
     static navigationOptions = {
         header:({navigation}) =>{
-            return (<View style={{...header}}>
+            return (
+                <ImageBackground style={{...header}} source={require('../assets/backgroundImageHeader.png')} resizeMode='cover'>
                 <TouchableOpacity activeOpacity={1} onPress={() => {
                     navigation.goBack();
                 }}>
@@ -51,26 +52,28 @@ export  default  class web extends Component {
                         <Image source={require('../assets/backIconWhite.png')} style={{width:20,height:20}}/>
                     </View>
                 </TouchableOpacity>
-                <Text style={{fontSize:17,textAlign:'center',fontWeight:'bold',lineHeight:43.7,color:'white'}}>发布</Text>
+                <Text style={{fontSize:17,textAlign:'center',fontWeight:'bold',lineHeight:43.7,color:'white'}}> {navigation.state.routes[navigation.state.index].params && navigation.state.routes[navigation.state.index].params.WebTitle}</Text>
                 <TouchableOpacity activeOpacity={1} onPress={() => {
                 }}>
                     <View style={{justifyContent:'center',marginRight:10,alignItems:'center',height:43.7}}>
                     </View>
                 </TouchableOpacity>
-            </View>)
+                </ImageBackground>
+            )
         }
     };
 
     constructor(props) {
         super(props);
-        this.state = {
-            enews: 'MAddInfo',
-            classid:'2',
-            mid:'7',
-            smalltext:'',
-            ctitle:'',
-            ecmsfrom:'9',
-        };
+    }
+
+    onNavigationStateChange(e) {
+        this.props.navigation.setParams({
+            WebTitle: e.title
+        });
+    }
+    componentDidMount() {
+
     }
 
 //this.props.navigation.state.params.data.content && JSON.parse(this.props.navigation.state.params.data.content).content
@@ -78,12 +81,12 @@ export  default  class web extends Component {
     }
     render() {
         return (
-                <WebView source={{uri:urlConfig.pubLishUrl}}/>
+                <WebView source={{uri:urlConfig.pubLishUrl}} onNavigationStateChange={(e)=>{this.onNavigationStateChange(e)}}/>
         );
     }
 }
 const header = {
-    backgroundColor: '#C7272F',
+   // backgroundColor: '#C7272F',
     ...ifIphoneX({
         paddingTop: 44,
         height:88

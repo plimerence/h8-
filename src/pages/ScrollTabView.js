@@ -47,26 +47,29 @@ import SplashScreen from 'react-native-splash-screen'
 import RNFetchBlob from 'react-native-fetch-blob'
 import Toast from 'react-native-root-toast';
 import baseConfig from '../utils/baseConfig'
+//<View style={{...header}}>
 export  default  class ScrollTabView extends Component {
     static navigationOptions = {
         header: ({navigation}) => {
-            return (<View style={{...header}}>
-                <TouchableOpacity activeOpacity={1} onPress={() => {
-                    navigation.state.routes[0].params.leftFuc && navigation.state.routes[0].params.leftFuc();
-                }}>
-                    <View style={{justifyContent: 'center', marginLeft: 10, alignItems: 'center', height: 43.7}}>
-                        <Image source={require('../assets/reload.png')} style={{width: 25, height: 25}}/>
-                    </View>
-                </TouchableOpacity>
-                <Text style={{fontSize: 17, textAlign: 'center', fontWeight: 'bold', lineHeight: 43.7, color: 'white'}}>哈吧</Text>
-                <TouchableOpacity activeOpacity={1} onPress={() => {
-                    navigation.state.routes[0].params.rightFuc && navigation.state.routes[0].params.rightFuc();
-                }}>
-                    <View style={{justifyContent: 'center', marginRight: 10, alignItems: 'center', height: 43.7}}>
-                        <Image source={require('../assets/edit.png')} style={{width: 30, height: 30}}/>
-                    </View>
-                </TouchableOpacity>
-            </View>)
+            return (
+                <ImageBackground style={{...header}} source={require('../assets/backgroundImageHeader.png')} resizeMode='cover'>
+                    <TouchableOpacity activeOpacity={1} onPress={() => {
+                        navigation.state.routes[navigation.state.index].params.leftFuc && navigation.state.routes[navigation.state.index].params.leftFuc();
+                    }}>
+                        <View style={{justifyContent: 'center', marginLeft: 10, alignItems: 'center', height: 43.7}}>
+                            <Image source={require('../assets/reload.png')} style={{width: 25, height: 25}}/>
+                        </View>
+                    </TouchableOpacity>
+                    <Text style={{fontSize: 17, textAlign: 'center', fontWeight: 'bold', lineHeight: 43.7, color: 'white'}}>哈吧</Text>
+                    <TouchableOpacity activeOpacity={1} onPress={() => {
+                        navigation.state.routes[navigation.state.index].params.rightFuc && navigation.state.routes[navigation.state.index].params.rightFuc();
+                    }}>
+                        <View style={{justifyContent: 'center', marginRight: 10, alignItems: 'center', height: 43.7}}>
+                            <Image source={require('../assets/edit.png')} style={{width: 30, height: 30}}/>
+                        </View>
+                    </TouchableOpacity>
+                </ImageBackground>
+            )
         }
     };
     //88  43.7 fontSize 17 fontWeight:600 RGBA0009 textALi;center
@@ -254,9 +257,9 @@ export  default  class ScrollTabView extends Component {
         }
         renderTabBar = (params) => {
             global.activeTab = params.activeTab;
-            return <ScrollableTabBar activeTextColor='red' underlineStyle={{width: 0, height: 0}}
+            return <ScrollableTabBar activeTextColor='red' underlineStyle={{height: 0,width:0}}
                                      backgroundColor='white' textStyle={{fontSize: 18}}
-                                     tabStyle={{paddingLeft: 10, paddingRight: 10}}/>;
+                                     tabStyle={{paddingLeft: 10, paddingRight: 10}} />;
         }
         pageNumber = (number) => {
             let page = 0;
@@ -290,8 +293,7 @@ export  default  class ScrollTabView extends Component {
             );
         }
     }
-    const
-    header = {
+    const header = {
         backgroundColor: '#C7272F',
         ...ifIphoneX({
             paddingTop: 44,
@@ -303,6 +305,7 @@ export  default  class ScrollTabView extends Component {
         flexDirection: 'row',
         justifyContent: 'space-between',
     }
+
 
 
 

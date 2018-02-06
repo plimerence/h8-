@@ -46,7 +46,7 @@ export default class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: [],
+           // data: [],
             refreshing: false,
             loadError:false,
             loadNewData:false,
@@ -67,7 +67,7 @@ export default class Home extends Component {
     }
      setClipboardContent = (text) => {
         Clipboard.setString(text);
-         Toast.show('保存成功', {
+         Toast.show('复制成功', {
              duration: Toast.durations.SHORT,
              position: Toast.positions.CENTER,
              shadow: true,
@@ -92,7 +92,7 @@ export default class Home extends Component {
                 url = this.isNotfirstFetch ? urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid + '&num=' + '1':urlConfig.baseURL + urlConfig.sectionListData + '&classid=' + this.props.data.classid;
         }
         _fetch(fetch(url),30000)
-            .then((response) => response.json())
+            .then((response) =>  response.json())
             .then((responseJson) => {
                 console.log('XXX',responseJson,url);
                 if (responseJson.status === '1') {
@@ -187,12 +187,19 @@ export default class Home extends Component {
         });
     }
     PostThumb = (item,dotop,index) => {
+        //diggtop   //diggbot
       //  {classid:2,id:2,dotop:1,doajax:1,ajaxarea:'diggnum'dotop这个字段 传0 是踩 传1是赞}
-      //   let {data} = this.state;
-      //   console.log('XXXX',data);
-      //
-      //   data[index].diggtop =  data[index].diggtop + 1;
-      //   this.setState({data:data});
+          let upDownData = [].concat(JSON.parse(JSON.stringify(this.FlatListData)));
+        if (dotop === 0){
+            upDownData[index].isUnLike =  true;
+            upDownData[index].diggbot =  (parseInt(upDownData[index].diggbot) - 1).toString();
+
+        }
+        if (dotop === 1) {
+            upDownData[index].isLike =  true;
+            upDownData[index].diggtop =  (parseInt(upDownData[index].diggtop) + 1).toString();
+        }
+
         let url = '';
         if (dotop === 0){
             url = urlConfig.baseURL + urlConfig.thumbDownUrl;
@@ -218,6 +225,9 @@ export default class Home extends Component {
             if (array.length > 0) {
                 message = array[array.length - 1];
             }
+            if (message === '谢谢您的支持' || message === '谢谢您的意见'){
+                this.flatList.setData(upDownData);
+            }
             this.ToastShow(message);
         }).catch((error)=>{console.log(error);
             this.ToastShow('失败');
@@ -228,13 +238,14 @@ export default class Home extends Component {
 //<Text style={{color: '#D3D3D3', marginLeft: 10}}>{formatData(item.newstime)}</Text>
    // item.smalltext && item.smalltext.replace(/\s+/g, "")
     _renderItem = ({item, index}) => {
-
         return (
             <TouchableOpacity activeOpacity={1} onPress={() => {
                 {/*this.refTextArray[index].setNativeProps({*/}
                     {/*style: {color: '#D3D3D3'}*/}
                 {/*});*/}
                // this.props.navigation.navigate('Detail', {data: this.state.data[index]});
+               // /^\r+|\n+$/g
+               // .replace(/^(\r\n)|(\n)|(\r)$/g,"")
 
             }}>
                 <View>
@@ -243,7 +254,7 @@ export default class Home extends Component {
                             fontSize: 16,
                             lineHeight: 24,
                             color:'black',
-                        }} onPress={()=>{this.setClipboardContent(item.smalltext && item.smalltext.replace(/^\r+|\n+$/g,""))}}>{item.smalltext && item.smalltext.replace(/^\r+|\n+$/g,"")}</Text>
+                        }}>{item.smalltext && item.smalltext.replace(/^(\r\n)|(\n)|(\r)/,"")}</Text>
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -263,14 +274,19 @@ export default class Home extends Component {
                             </View>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{flexDirection: 'row'}}>
+                                    <TouchableOpacity activeOpacity={1} onPress={()=>{this.setClipboardContent(item.smalltext && item.smalltext)}} hitSlop={{left:10,right:10,top:10,bottom:10}}>
+                                        <Image style={{width: 20, height: 20}} source={require('../assets/copy.jpg')}/>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{flexDirection: 'row',marginLeft: 10}}>
                                     <TouchableOpacity activeOpacity={1} onPress={()=>{this.PostThumb(item,1,index)}} hitSlop={{left:10,right:10,top:10,bottom:10}}>
-                                        <Image style={{width: 20, height: 20}} source={require('../assets/up.png')}/>
+                                        <Image style={{width: 20, height: 20}} source={item.isLike ?require('../assets/upRed.jpg') : require('../assets/up.jpg')}/>
                                     </TouchableOpacity>
                                     <Text style={{marginLeft: 5}}>{item.diggtop && item.diggtop}</Text>
                                 </View>
                                 <View style={{flexDirection: 'row', marginLeft: 10}}>
                                     <TouchableOpacity activeOpacity={1} onPress={()=>{this.PostThumb(item,0,index)}} hitSlop={{left:10,right:10,top:10,bottom:10}}>
-                                        <Image style={{width: 20, height: 20}} source={require('../assets/down.png')}/>
+                                        <Image style={{width: 20, height: 20}} source={item.isUnLike ? require('../assets/downRed.jpg') : require('../assets/down.jpg')}/>
                                     </TouchableOpacity>
                                     <Text style={{marginLeft: 5}}>{item.diggbot && item.diggbot}</Text>
                                 </View>
@@ -372,7 +388,6 @@ export default class Home extends Component {
                     style={{backgroundColor: 'white'}}
                     ref={(c) => {this.flatList = c}}
                     ifRenderFooter={this.props.index !== 1 ? false : true}
-
                 />
                 {this.state.loadNewData ? <View style={{
                     height: 40,
